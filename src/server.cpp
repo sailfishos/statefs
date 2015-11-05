@@ -732,19 +732,21 @@ int DiscretePropFile::release(struct fuse_file_info &fi)
 void DiscretePropFile::notify()
 {
     auto fn = [this]() {
+        auto enable_notify_on_exit = cor::on_scope_exit([this]() {
+                is_notify_.clear(std::memory_order_release);
+            });
         // CALL is originated from provider, so acquire lock
         auto l(cor::wlock(*this));
         update_time(modification_time_bit | change_time_bit | access_time_bit);
         if (handles_.empty())
             return;
+
         std::list<handle_ptr> snapshot;
         for (auto const &h : handles_)
             snapshot.push_back(h.second);
         l.unlock();
         for (auto h : snapshot)
             h->notify(*this);
-
-        is_notify_.clear(std::memory_order_release);
     };
     if (!is_notify_.test_and_set(std::memory_order_acquire)) {
         parent_->enqueue(std::packaged_task<void()>{fn});
