@@ -16,8 +16,8 @@ static pthread_mutex_t basic_mutex = PTHREAD_MUTEX_INITIALIZER;
 static bool is_running = true;
 static pthread_t tid;
 
-static int counter = 0;
-static int counter_dt = 100;
+static long long counter = 0;
+static unsigned counter_dt = 100;
 
 static bool basic_is_initialized = false;
 
@@ -60,7 +60,7 @@ static int read_rand(char *dst, statefs_size_t max_size)
 static int read_counter(char *dst, statefs_size_t max_size)
 {
     pthread_mutex_lock(&basic_mutex);
-    int s = snprintf(dst, max_size, "%i", counter);
+    int s = snprintf(dst, max_size, "%lld", counter);
     ++counter;
     pthread_mutex_unlock(&basic_mutex);
     return s;
@@ -76,12 +76,8 @@ static int write_counter_dt(char const *src, statefs_size_t size)
     buf[size] = 0;
 
     pthread_mutex_lock(&basic_mutex);
-    int c = atoi(buf);
-    if (c) {
-        counter_dt = c;
-    } else {
-        printf("wrong counter dT value is supplied %s\n", buf);
-    }
+    int c = atol(buf);
+    counter_dt = c;
     pthread_mutex_unlock(&basic_mutex);
     return size;
 }
@@ -157,7 +153,7 @@ static void * control_thread(void *arg)
 {
     struct statefs_basic_prop *self = &props[prop_id_counter];
     while (is_running) {
-        int dt;
+        unsigned dt;
         pthread_mutex_lock(&basic_mutex);
         dt = counter_dt;
         ++counter;
@@ -165,7 +161,7 @@ static void * control_thread(void *arg)
         if (slot)
             slot->on_changed(slot, &self->prop);
         pthread_mutex_unlock(&basic_mutex);
-        usleep(dt);
+        if (dt) usleep(dt);
     }
     return NULL;
 }
