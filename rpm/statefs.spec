@@ -258,5 +258,7 @@ fi
 %post examples
 %{_statefs_libdir}/provider-do register default examples system || :
 
-%postun examples
-%{_statefs_libdir}/provider-do unregister default examples system || :
+%preun examples
+if [ $1 -eq 0 ]; then
+   %{_statefs_libdir}/provider-do unregister default examples system || :
+fi
