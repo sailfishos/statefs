@@ -16,6 +16,7 @@
 #include <boost/algorithm/string/join.hpp>
 
 #include <list>
+#include <map>
 #include <string>
 #include <sstream>
 #include <memory>
@@ -57,55 +58,23 @@ class DefaultTime
 {
 public:
     DefaultTime() :
-        change_time_(::time(0)),
+        change_time_(get_now()),
         modification_time_(change_time_),
         access_time_(change_time_)
     { }
 
     virtual ~DefaultTime() {}
 
-    time_t modification_time()
-    {
-        return modification_time_;
-    }
+    int update_time(int mask);
 
-    time_t change_time()
-    {
-        return change_time_;
-    }
+    int timeattr(struct stat *buf);
 
-    time_t access_time()
-    {
-        return access_time_;
-    }
-
-    int update_time(int mask)
-    {
-        const time_t now(::time(0));
-        if (mask & change_time_bit)
-            change_time_ = now;
-
-        if (mask & modification_time_bit)
-            modification_time_ = now;
-
-        if (mask & access_time_bit)
-            access_time_ = now;
-
-        return 0;
-    }
-
-    int timeattr(struct stat *buf)
-    {
-        buf->st_ctime = change_time();
-        buf->st_atime = access_time();
-        buf->st_mtime = modification_time();
-        return 0;
-    }
+    static struct timespec get_now();
 
 private:
-    time_t change_time_;
-    time_t modification_time_;
-    time_t access_time_;
+    struct timespec change_time_;
+    struct timespec modification_time_;
+    struct timespec access_time_;
 };
 
 #ifdef USE_XATTR

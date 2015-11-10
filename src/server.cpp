@@ -737,7 +737,7 @@ void DiscretePropFile::notify()
             });
         // CALL is originated from provider, so acquire lock
         auto l(cor::wlock(*this));
-        update_time(modification_time_bit | change_time_bit | access_time_bit);
+        update_time(modification_time_bit | change_time_bit);
         if (handles_.empty())
             return;
 

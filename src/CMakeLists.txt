@@ -19,7 +19,7 @@ target_link_libraries(statefs-config
   ${Boost_SYSTEM_LIBRARY}
   )
 
-add_executable(statefs server.cpp)
+add_executable(statefs server.cpp metafuse.cpp)
 
 target_link_libraries(statefs
   statefs-config

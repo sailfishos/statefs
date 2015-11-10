@@ -71,12 +71,12 @@ private:
 
 typedef std::unique_ptr<Path> path_ptr;
 
-path_ptr empty_path()
+inline path_ptr empty_path()
 {
     return path_ptr((Path*)0);
 }
 
-path_ptr mk_path(char const *path)
+inline path_ptr mk_path(char const *path)
 {
     return path_ptr(new Path(path));
 }
