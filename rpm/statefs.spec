@@ -8,9 +8,9 @@ Summary: Syntetic filesystem to expose system state
 Name: statefs
 Version: 0.0.0
 Release: 1
-License: LGPLv2
+License: LGPLv2.1 and LGPLv2.1+
 Group: System Environment/Tools
-URL: http://github.com/nemomobile/statefs
+URL: https://git.merproject.org/mer-core/statefs
 Source0: %{name}-%{version}.tar.bz2
 BuildRequires: pkgconfig(fuse)
 %if %{undefined suse_version}
