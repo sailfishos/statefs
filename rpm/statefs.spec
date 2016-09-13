@@ -1,7 +1,3 @@
-%{!?_with_usersession: %{!?_without_usersession: %global _with_usersession --with-usersession}}
-%{!?_with_oneshot: %{!?_without_oneshot: %global _with_oneshot --with-oneshot}}
-%{!?cmake_install: %global cmake_install make install DESTDIR=%{buildroot}}
-
 %define cor_version 0.1.17
 
 Summary: Syntetic filesystem to expose system state
@@ -13,23 +9,18 @@ Group: System Environment/Tools
 URL: https://git.merproject.org/mer-core/statefs
 Source0: %{name}-%{version}.tar.bz2
 BuildRequires: pkgconfig(fuse)
-%if %{undefined suse_version}
-BuildRequires: boost-filesystem
-%endif
 BuildRequires: boost-devel
 BuildRequires: cmake >= 2.8
 BuildRequires: doxygen
 BuildRequires: pkgconfig(cor) >= %{cor_version}
 BuildRequires: systemd
 Requires: fuse >= 2.9.0
-%{?_with_usersession:Requires: systemd-user-session-targets}
+Requires: systemd-user-session-targets
 
-%if 0%{?_with_oneshot:1}
 BuildRequires: oneshot
 Requires: oneshot
 %_oneshot_requires_pre
 %_oneshot_requires_post
-%endif
 Provides: statefs-change-notifier = %{version}
 Obsoletes: statefs-change-notifier < 0.3.29.999
 
@@ -92,31 +83,31 @@ Requires:   python >= 2.7
 %define my_env_dir %{_sysconfdir}/sysconfig/statefs
 %define statefs_state_dir /var/lib/statefs
 %define _statefs_libdir %{_libdir}/statefs
-%{?_with_usersession:%global _userunitdir %{_libdir}/systemd/user/}
+%define _userunitdir %{_libdir}/systemd/user/
 
 %prep
-%setup -q
+%setup -q -n %{name}/%{version}
 
 %build
-%if 0%{?_with_usersession:1}
-%define user_session_cmake -DENABLE_USER_SESSION=ON -DSYSTEMD_USER_UNIT_DIR=%{_userunitdir}
-%else
-%define user_session_cmake -DENABLE_USER_SESSION=OFF
-%endif
-%cmake -DVERSION=%{version} -DSTATEFS_GROUP=%{statefs_group} -DSTATEFS_UMASK=%{statefs_umask} %{?_with_multiarch:-DENABLE_MULTIARCH=ON} -DSYSTEMD_UNIT_DIR=%{_unitdir} %{user_session_cmake} -DSYS_CONFIG_DIR=%{my_env_dir} %{?_with_oneshot:-DENABLE_ONESHOT=ON}
+%cmake -DVERSION=%{version} \
+  -DSTATEFS_GROUP=%{statefs_group} \
+  -DSTATEFS_UMASK=%{statefs_umask} \
+  %{?_with_multiarch:-DENABLE_MULTIARCH=ON} \
+  -DSYSTEMD_UNIT_DIR=%{_unitdir} \
+  -DENABLE_USER_SESSION=ON -DSYSTEMD_USER_UNIT_DIR=%{_userunitdir} \
+  -DSYS_CONFIG_DIR=%{my_env_dir} \
+  -DENABLE_ONESHOT=ON
 make %{?jobs:-j%jobs}
 make doc
 
 %install
 rm -rf %{buildroot}
-%cmake_install
+make install DESTDIR=%{buildroot}
 
 mv %{buildroot}%{_unitdir}/statefs-system.service %{buildroot}%{_unitdir}/statefs.service
 
-%if 0%{?_with_usersession:1}
 mkdir -p %{buildroot}%{_userunitdir}/pre-user-session.target.wants
 ln -sf ../statefs.service %{buildroot}%{_userunitdir}/pre-user-session.target.wants/
-%endif
 mkdir -p %{buildroot}%{_unitdir}/multi-user.target.wants
 ln -sf ../statefs.service %{buildroot}%{_unitdir}/multi-user.target.wants/
 mkdir -p %{buildroot}%{_unitdir}/actdead-pre.target.wants
@@ -149,10 +140,8 @@ rm -rf %{buildroot}
 %{_bindir}/statefs
 %{_bindir}/statefs-prerun
 %dir %{statefs_state_dir}
-%if 0%{?_with_usersession:1}
 %{_userunitdir}/statefs.service
 %{_userunitdir}/pre-user-session.target.wants/statefs.service
-%endif
 %{_unitdir}/statefs.service
 %{_unitdir}/multi-user.target.wants/statefs.service
 %{_unitdir}/actdead-pre.target.wants/statefs.service
@@ -230,16 +219,12 @@ function update_env() {
 }
 test -d %{my_env_dir} || mkdir -p %{my_env_dir}
 update_env $SYS_ENV_FILE
-%if 0%{?_with_usersession:1}
 update_env $SES_ENV_FILE
-%endif
 
 %{_statefs_libdir}/loader-do register default || :
 if [ $1 -eq 1 ]; then
     systemctl daemon-reload || :
-%if 0%{?_with_usersession:1}
     systemctl-user daemon-reload || :
-%endif
 fi
 
 %preun
