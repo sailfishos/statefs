@@ -86,7 +86,7 @@ Requires:   python >= 2.7
 %define _userunitdir %{_libdir}/systemd/user/
 
 %prep
-%setup -q -n %{name}/%{version}
+%setup -q -n %{name}-%{version}
 
 %build
 %cmake -DVERSION=%{version} \
