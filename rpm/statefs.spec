@@ -16,6 +16,7 @@ BuildRequires: pkgconfig(cor) >= %{cor_version}
 BuildRequires: systemd
 Requires: fuse >= 2.9.0
 Requires: systemd-user-session-targets
+ExcludeArch:   aarch64
 
 BuildRequires: oneshot
 Requires: oneshot
