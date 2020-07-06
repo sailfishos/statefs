@@ -74,7 +74,7 @@ Summary:    Tests for statefs
 License:    LGPLv2.1
 Group:      System Environment/Libraries
 Requires:   %{name} = %{version}-%{release}
-Requires:   python >= 2.7
+Requires:   python3-base
 %description tests
 %summary
 
