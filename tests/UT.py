@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2013 Jolla Ltd.
@@ -86,7 +86,7 @@ class StackParser:
     def parse(self, stack):
         [self.__parse(x) for x in stack.split("\n")]
         traces = {loc : '\n'.join(lines) \
-                      for loc, lines in self.locations.items() }
+                      for loc, lines in list(self.locations.items()) }
         return self.err, traces
 
 class Test(object):
@@ -182,7 +182,7 @@ class Suite(object):
 
     @property
     def tests(self) :
-        return self.__tests.values()
+        return list(self.__tests.values())
 
     def __enter__(self):
         if hasattr(self, 'suite_setup'):
@@ -333,7 +333,7 @@ class Report(object):
             self.__test = test
 
         def __enter__(self):
-            self.report.log.info("Test {:s}".format(self.__test))
+            self.report.log.info("Test {:s}".format(str(self.__test)))
 
         def __exit__(self, *args):
             self.report.log.info("}")
@@ -404,7 +404,7 @@ class Report(object):
     def __format_result(self, res):
         def log(data):
             if type(data) != str:
-                [self.log.warning(':'.join(x)) for x in data.items()]
+                [self.log.warning(':'.join(x)) for x in list(data.items())]
                 #self.stream.writelines(data)
             else:
                 self.log.warning(data)

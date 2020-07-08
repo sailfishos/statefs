@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2013 Jolla Ltd.
@@ -45,7 +45,7 @@ def mkdir(name):
     os.path.exists(name) or os.makedirs(name)
 
 def execute_rc(cmd):
-    print "Execute", cmd
+    print("Execute", cmd)
     return subprocess.call(cmd)
 
 class StateFS(Suite):
@@ -70,7 +70,7 @@ class StateFS(Suite):
 
     def run_fuse_server(self):
         cmd = self.__cmd("-f", self.mntdir)
-        print "Run server:", cmd
+        print("Run server:", cmd)
         self.server = Popen(cmd, stdout=PIPE, stderr=PIPE)
         self.suite_teardown.append(self.terminate_server)
         timeout = 50
@@ -157,7 +157,7 @@ class StateFS(Suite):
         content = { 'a' : '1', 'b' : '20', 'c' : '300' }
         [self.ensure_eq(open(fname, 'r').readline().strip(), content[name],
                         "expected file {} content", name) \
-             for name, fname in self.file_paths.items()]
+             for name, fname in list(self.file_paths.items())]
 
 if __name__ == '__main__':
     tests_path = os.path.dirname(sys.argv[0])

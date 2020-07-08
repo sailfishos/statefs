@@ -4,8 +4,7 @@ Summary: Syntetic filesystem to expose system state
 Name: statefs
 Version: 0.0.0
 Release: 1
-License: LGPLv2.1 and LGPLv2.1+
-Group: System Environment/Tools
+License: LGPLv2 and LGPLv2+
 URL: https://git.merproject.org/mer-core/statefs
 Source0: %{name}-%{version}.tar.bz2
 BuildRequires: pkgconfig(fuse)
@@ -31,13 +30,11 @@ provided by StateFS plugins as properties wrapped into namespaces.
 
 %package pp
 Summary: Statefs framework for C++ providers
-Group: System Environment/Libraries
 %description pp
 Statefs framework to be used to write providers in C++
 
 %package devel
 Summary: Files to develop statefs clients and providers
-Group: System Environment/Libraries
 Requires: cor-devel >= %{cor_version}
 Requires: statefs = %{version}-%{release}
 %description devel
@@ -45,7 +42,6 @@ Headers, libraries etc. needed to develop statefs clients and providers
 
 %package provider-devel
 Summary: Files to develop statefs providers
-Group: System Environment/Libraries
 Requires: statefs-pp = %{version}-%{release}
 Requires: cor-devel >= %{cor_version}
 Requires: statefs-devel = %{version}-%{release}
@@ -54,7 +50,6 @@ Headers, libraries etc. needed to develop statefs providers
 
 %package doc
 Summary: Statefs developer documentation
-Group: Documenation
 BuildRequires: doxygen
 %if 0%{?_with_docs:1}
 BuildRequires: graphviz
@@ -64,17 +59,15 @@ Statefs developer documentation
 
 %package examples
 Summary: Statefs provider examples
-Group: System Environment/Libraries
 Requires:   %{name} = %{version}-%{release}
 %description examples
 %summary
 
 %package tests
 Summary:    Tests for statefs
-License:    LGPLv2.1
-Group:      System Environment/Libraries
+License:    LGPLv2+
 Requires:   %{name} = %{version}-%{release}
-Requires:   python >= 2.7
+Requires:   python3-base
 %description tests
 %summary
 
